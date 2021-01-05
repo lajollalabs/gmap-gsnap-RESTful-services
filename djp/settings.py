@@ -11,7 +11,6 @@ import os
 DBFILE = '/g/db-build-id'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '6o6!#23-gu2_*rv5vj##)@ko6^wbi5rhmcbj21udtq35thqom'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 ALLOWED_HOSTS = ['*']
