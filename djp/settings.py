@@ -8,11 +8,9 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 import os
 
-DBFILE = '/g/db-build-id'
+HOMO_SAPIENS_PRIMARY_DNA = '/data/bedtools-ptr'
+DBFILE = '/data/gmap-ptr'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '6o6!#23-gu2_*rv5vj##)@ko6^wbi5rhmcbj21udtq35thqom'
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
@@ -24,7 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-
+SECRET_KEY = "0000000000"
 #MIDDLEWARE_CLASSES = [
 #    'django.middleware.common.CommonMiddleware',
 #    'django.middleware.csrf.CsrfViewMiddleware',
