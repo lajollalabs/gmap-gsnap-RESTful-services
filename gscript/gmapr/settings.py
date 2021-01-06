@@ -1,2 +1,2 @@
 
-IDFILE = '/gmap/db-build-id'
+IDFILE = '/data/gmap-ptr'

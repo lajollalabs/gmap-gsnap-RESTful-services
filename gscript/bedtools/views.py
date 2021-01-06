@@ -1,7 +1,7 @@
 import json
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from gsnap_exec import GSNAP
+from bed import BEDTOOLS
 
 @csrf_exempt
 def hello(request):
@@ -9,25 +9,80 @@ def hello(request):
     r['Access-Control-Allow-Origin'] = '*'
     return r
 
-#@csrf_exempt
-#def gsnap_with_rna_bld(request):
-#	sequence = request.GET.get('sequence')
-#	sg = GSNAP ()
-#	res = sg.runGSNAPOnOligo ( sequence )
-#	gsnap_results_list = []
-#	for r in res:
-#	    lines = r.split ('\n')
-#            values=parseSimple(lines)
-#	    j = {
-#                    'seq':sequence,
-#		    'res':values
-#		}
-#	    gsnap_results_list.append ( j )
-#	r = HttpResponse(json.dumps(gsnap_results_list), content_type="application/json")
-#	r['Access-Control-Allow-Origin'] = '*'
-#	return r
+@csrf_exempt
+def get_sequence_for_coordinates(request):
+    startCoord = request.GET.get(r'start')
+    endCoord = request.GET.get(r'end')
+    chromosome = request.GET.get(r'chr')
+    strand = request.GET.get(r'strand')
+    name = request.GET.get(r'name')
+   
+    print ( chromosome )
+
+    if name is None:
+        name = 'temp'
+
+
+    if strand is None:
+        strand = "+"
+    sg = BEDTOOLS()
+    j = {}
+    res = sg.get_sequence (chromosome, startCoord, endCoord, name, strand)
+    lines = res.split ('\n')
+    commentLine = lines[0]
+    sequence = lines[1]
+
+    j = { 'header': commentLine, 'sequence':sequence }
+    r = HttpResponse(json.dumps(j), content_type='application/json')
+    r['Access-Control-Allow-Origin'] = '*'
+    return r
 #
-#
+
+#+17:7676012..7676031
+
+@csrf_exempt
+def get_sequence_for_gsnap_coordinates(request):
+    cor = request.GET.get(r'coordinates')
+    if cor.startswith ('+') or cor.startswith ('-'):
+        print ( 'strand is defined')
+    else:
+        cor = '+'+cor
+        print ( 'strand was not defined so we are defaulting to positive' )
+
+    chrs = cor.split (':')[0]
+    strand = chrs[0]
+    chromosome = chrs[1:]
+    
+    coordinates = cor.split (':')[1].split ("..")   
+    startCoord = coordinates[0]
+    endCoord = coordinates[1]
+    print ( startCoord )
+    print ( endCoord )
+    print ( chromosome )
+    print ( strand )
+
+       
+
+
+    name = request.GET.get(r'name')
+    if name is None:
+        name = 'temp'
+    if strand is None:
+        strand = "+"
+    sg = BEDTOOLS()
+    j = {}
+    res = sg.get_sequence (chromosome, startCoord, endCoord, name, strand)
+    lines = res.split ('\n')
+    commentLine = lines[0]
+    sequence = lines[1]
+
+    j = { 'header': commentLine, 'sequence':sequence }
+    r = HttpResponse(json.dumps(j), content_type='application/json')
+    r['Access-Control-Allow-Origin'] = '*'
+    return r
+
+
+
 
 
 @csrf_exempt
@@ -43,12 +98,6 @@ def simple_gsnap(request):
     r = HttpResponse(json.dumps(j), content_type='application/json')
     r['Access-Control-Allow-Origin'] = '*'
     return r
-
-
-
-
-
-
 #	if sequence.find (',') > 0:
 #		res = []
 #		slist = sequence.split (',')
@@ -101,33 +150,9 @@ def parseSimple(lines):
                 r.append (c)
     return r
 
-#def parseSimple ( lines ):
-#    r = []	
-#    it = iter (lines)
-#    for l in it:
-#        l = l.strip();
-#	if l.startswith ( 'input-sequence' ):
-#	    indexi = l.find (':')
-#	    if indexi > 0:
-#		r.append({'input-sequence':l[indexi+1:]})
-#	elif l.startswith ( 'comment' ):
-#	    indexi = l.find (':')
-#	    if indexi > 0:
-#	        test = l[indexi+1:]
-#	    if len(test)>0:
-#	        r.append({'comment':l[indexi+1:]})
-#	elif l.startswith ( '>' ):
-#	    print ' > skip line '
-#	else:
-#	    c = parseSimpleRegion ( l )
-#	    if len(c) > 1:
-#	        r.append ( c )
-#    return r
-#
 def parseSimpleRegion ( l ):
     l = l.strip()
     d = l.split ('\t')
-#
     j = {}
     if len(d) <= 1:
         return j
@@ -140,7 +165,8 @@ def parseSimpleRegion ( l ):
     j['coords']= coordStringToJSON(coordinates)
     j['match']=matchstrings
     return j
-#
+
+
 def coordStringToJSON ( cstring ):
     strand =  cstring[:1]
     col = cstring.find (':')
@@ -164,6 +190,9 @@ def coordStringToJSON ( cstring ):
     }
     print (' cstring ', cstring )
     return js
+
+
+
 #
 #@csrf_exempt
 #def gsnap_cdna_to_genomic(request):
