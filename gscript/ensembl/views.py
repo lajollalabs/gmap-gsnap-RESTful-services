@@ -38,8 +38,18 @@ def get_id(request):
         name = 'temp'
     if strand is None:
         strand = "+"
-    
-    gene_names = data.gene_ids_at_locus  (contig=chromosome, position=startCoord)
+
+    startCoord = int(startCoord)
+    endCoord = int(endCoord)
+    midPt = abs(endCoord-startCoord)
+
+    if endCoord > startCoord:
+        midPt = startCoord + midPt
+    else:
+        midPt = endCoord + midPt
+
+    print ( midPt )
+    gene_names = data.gene_ids_at_locus  (contig=chromosome, position=midPt)
     
     j = {}
 
