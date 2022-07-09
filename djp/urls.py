@@ -5,4 +5,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^gscript/', include('gscript.gmapr.urls')),
     url(r'^bedtools/', include('gscript.bedtools.urls')),
+    url(r'^ensembl/', include('gscript.ensembl.urls')),
 ]
