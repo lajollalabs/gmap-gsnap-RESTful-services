@@ -4,7 +4,6 @@ from django.views.decorators.csrf import csrf_exempt
 from pyensembl import EnsemblRelease
 
 
-data = EnsemblRelease(77)
 
 
 @csrf_exempt
@@ -16,6 +15,8 @@ def hello(request):
 #+17:7676012..7676031
 @csrf_exempt
 def get_id(request):
+
+    data = EnsemblRelease(77)
     cor = request.GET.get(r'coordinates')
     if cor.startswith ('+') or cor.startswith ('-'):
         print ( 'strand is defined')
